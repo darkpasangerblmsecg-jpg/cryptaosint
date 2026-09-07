@@ -1,5 +1,7 @@
 import datetime
+import hashlib
 import os
+import re
 import socket
 from flask import Flask, jsonify, render_template, request
 from phonenumbers import carrier, geocoder
@@ -17,6 +19,44 @@ def snowflake_to_date(snowflake_id):
     return datetime.datetime.utcfromtimestamp(timestamp / 1000.0).isoformat()
   except Exception:
     return "Bilinmiyor"
+
+
+def is_email(target):
+  return bool(re.match(r"[^@]+@[^@]+\.[^@]+", target))
+
+
+def lookup_email(email):
+  clean_email = email.strip().lower()
+  email_hash = hashlib.md5(clean_email.encode("utf-8")).hexdigest()
+
+  gravatar_url = f"https://www.gravatar.com/{email_hash}.json"
+  profile_data = {}
+  has_gravatar = False
+
+  try:
+    response = requests.get(gravatar_url, timeout=5)
+    if response.status_code == 200:
+      has_gravatar = True
+      data = response.json()
+      entry = data.get("entry", [{}])[0]
+      profile_data = {
+          "display_name": entry.get("displayName", "Bilinmiyor"),
+          "profile_url": entry.get("profileUrl", ""),
+          "avatar_url": f"https://www.gravatar.com/avatar/{email_hash}?s=4096",
+      }
+  except Exception:
+    pass
+
+  domain = clean_email.split("@")[-1]
+
+  return {
+      "success": True,
+      "type": "email",
+      "email": clean_email,
+      "domain": domain,
+      "gravatar": has_gravatar,
+      "profile": profile_data if has_gravatar else None,
+  }
 
 
 @app.route("/")
@@ -82,7 +122,14 @@ def lookup():
   if not target:
     return jsonify({"success": False, "message": "Hedef boş olamaz!"})
 
-  # 0. Discord ID Lookup (Eğer girilen hedef tamamen rakamlardan oluşuyorsa ve uzunluğu Discord ID boyutuna uyuyorsa)
+  # 0. E-mail Lookup
+  if is_email(target):
+    try:
+      return jsonify(lookup_email(target))
+    except:
+      pass
+
+  # 1. Discord ID Lookup
   if target.isdigit() and len(target) >= 17:
     try:
       resp = requests.get(f"https://japi.rest/discord/v1/user/{target}", timeout=5).json()
@@ -108,7 +155,7 @@ def lookup():
     except:
       pass
 
-  # 1. IP Lookup
+  # 2. IP Lookup
   if target.count(".") == 3 and all(p.isdigit() for p in target.split(".")):
     try:
       res = requests.get(f"https://ipwho.is/{target}", timeout=5).json()
@@ -130,7 +177,7 @@ def lookup():
     except:
       pass
 
-  # 2. Phone Lookup
+  # 3. Phone Lookup
   if target.startswith("+") or target.isdigit():
     try:
       parsed = phonenumbers.parse(target)
@@ -157,7 +204,7 @@ def lookup():
     except:
       pass
 
-  # 3. Domain Lookup
+  # 4. Domain Lookup
   if "." in target and not " " in target and not target.startswith("+"):
     clean_domain = (
         target.replace("https://", "").replace("http://", "").split("/")[0]
@@ -174,7 +221,7 @@ def lookup():
     except:
       pass
 
-  # 4. Username Lookup (Mock Socials)
+  # 5. Username Lookup (Mock Socials)
   if len(target) > 2 and not "." in target:
     found = {
         "GitHub": f"https://github.com/{target}",
@@ -183,7 +230,6 @@ def lookup():
         "TikTok": f"https://tiktok.com/@{target}",
     }
     return jsonify({
-        "success": type,  # (İsteğe bağlı genel arama yapısı)
         "success": True,
         "type": "username",
         "username": target,
@@ -193,7 +239,7 @@ def lookup():
   return jsonify({
       "success": False,
       "message": (
-          "Geçerli bir IP, Domain, Telefon, Discord ID veya Kullanıcı Adı girin!"
+          "Geçerli bir IP, Domain, Telefon, Discord ID, E-posta veya Kullanıcı Adı girin!"
       ),
   })
 

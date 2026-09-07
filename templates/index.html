@@ -130,7 +130,7 @@
 
     <div class="main-card">
         <div class="input-group search-group mb-4">
-            <input type="text" id="targetInput" class="form-control" placeholder="IP, Domain, Username, Telefon (+90...) veya Discord ID girin...">
+            <input type="text" id="targetInput" class="form-control" placeholder="IP, Domain, Username, Telefon, Discord ID veya E-posta girin...">
             <button class="btn btn-primary" onclick="performLookup()">
                 <i class="fa-solid fa-magnifying-glass me-2"></i>Sorgula
             </button>
@@ -245,6 +245,26 @@ async function performLookup() {
             document.getElementById('val3').innerText = data.bot ? "Evet (Bot)" : "Hayır (Normal Kullanıcı)";
             document.getElementById('lbl4').innerText = "Profil Avatarı"; 
             document.getElementById('val4').innerHTML = `<a href="${data.avatar}" target="_blank" class="text-info text-decoration-none">[Avatarı Tam Boyut Görüntüle]</a>`;
+        }
+        else if(data.type === "email") {
+            document.getElementById('lbl1').innerText = "E-Posta Adresi"; 
+            document.getElementById('val1').innerHTML = `<span class="badge-custom">EMAIL</span> ${data.email}`;
+            document.getElementById('lbl2').innerText = "Alan Adı (Domain)"; 
+            document.getElementById('val2').innerText = data.domain;
+            document.getElementById('lbl3').innerText = "Gravatar Kaydı"; 
+            document.getElementById('val3').innerText = data.gravatar ? "Var (Aktif)" : "Bulunamadı";
+            
+            if(data.gravatar && data.profile) {
+                document.getElementById('lbl4').innerText = "Gravatar / Profil Detayı"; 
+                document.getElementById('val4').innerHTML = `
+                    Görünen Ad: <b>${data.profile.display_name}</b> | 
+                    <a href="${data.profile.profile_url}" target="_blank" class="text-info ms-2 text-decoration-none">[Profil Linki]</a> | 
+                    <a href="${data.profile.avatar_url}" target="_blank" class="text-success ms-2 text-decoration-none">[Avatarı Gör]</a>
+                `;
+            } else {
+                document.getElementById('lbl4').innerText = "Ek Bilgi / İzler"; 
+                document.getElementById('val4').innerText = "Bu e-posta ile ilişkili halka açık ek profil izine rastlanmadı.";
+            }
         }
         else if(data.type === "username") {
             document.getElementById('lbl1').innerText = "Kullanıcı Adı"; 
