@@ -169,8 +169,12 @@ def lookup():
             "type": "ip",
             "ip": target,
             "city": res.get("city", "Bilinmiyor"),
+            "region": res.get("region", "Bilinmiyor"),
             "country": res.get("country", "Bilinmiyor"),
+            "latitude": res.get("latitude", 0),
+            "longitude": res.get("longitude", 0),
             "isp": res.get("connection", {}).get("isp", "Bilinmiyor"),
+            "org": res.get("connection", {}).get("org", "Bilinmiyor"),
             "domain": rev_dns,
         })
     except:

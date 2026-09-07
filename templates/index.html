@@ -203,14 +203,17 @@ async function performLookup() {
         resultArea.style.display = 'flex';
 
         if(data.type === "ip") {
-            document.getElementById('lbl1').innerText = "IP Adresi"; 
-            document.getElementById('val1').innerHTML = `<span class="badge-custom">IPv4</span> ${data.ip}`;
-            document.getElementById('lbl2').innerText = "Konum"; 
-            document.getElementById('val2').innerText = `${data.city}, ${data.country}`;
-            document.getElementById('lbl3').innerText = "ISP Sağlayıcı"; 
-            document.getElementById('val3').innerText = data.isp;
-            document.getElementById('lbl4').innerText = "Reverse DNS"; 
-            document.getElementById('val4').innerText = data.domain;
+            document.getElementById('lbl1').innerText = "IP Adresi & Organizasyon"; 
+            document.getElementById('val1').innerHTML = `<span class="badge-custom">IPv4</span> ${data.ip} (${data.org})`;
+            
+            document.getElementById('lbl2').innerText = "Konum (Şehir / Ülke)"; 
+            document.getElementById('val2').innerText = `${data.city}, ${data.region} / ${data.country}`;
+            
+            document.getElementById('lbl3').innerText = "Koordinatlar (Enlem / Boylam)"; 
+            document.getElementById('val3').innerHTML = `Lat: <b>${data.latitude}</b>, Lon: <b>${data.longitude}</b> | <a href="https://www.google.com/maps/search/?api=1&query=${data.latitude},${data.longitude}" target="_blank" class="text-info text-decoration-none">[Haritada Aç]</a>`;
+            
+            document.getElementById('lbl4').innerText = "ISP Sağlayıcı & Reverse DNS"; 
+            document.getElementById('val4').innerHTML = `ISP: <b>${data.isp}</b><br>DNS: <span class="text-muted">${data.domain}</span>`;
         } 
         else if(data.type === "domain") {
             document.getElementById('lbl1').innerText = "Alan Adı (Domain)"; 
@@ -249,22 +252,24 @@ async function performLookup() {
         else if(data.type === "email") {
             document.getElementById('lbl1').innerText = "E-Posta Adresi"; 
             document.getElementById('val1').innerHTML = `<span class="badge-custom">EMAIL</span> ${data.email}`;
-            document.getElementById('lbl2').innerText = "Alan Adı (Domain)"; 
-            document.getElementById('val2').innerText = data.domain;
-            document.getElementById('lbl3').innerText = "Gravatar Kaydı"; 
-            document.getElementById('val3').innerText = data.gravatar ? "Var (Aktif)" : "Bulunamadı";
             
-            if(data.gravatar && data.profile) {
-                document.getElementById('lbl4').innerText = "Gravatar / Profil Detayı"; 
-                document.getElementById('val4').innerHTML = `
-                    Görünen Ad: <b>${data.profile.display_name}</b> | 
-                    <a href="${data.profile.profile_url}" target="_blank" class="text-info ms-2 text-decoration-none">[Profil Linki]</a> | 
-                    <a href="${data.profile.avatar_url}" target="_blank" class="text-success ms-2 text-decoration-none">[Avatarı Gör]</a>
-                `;
+            document.getElementById('lbl2').innerText = "Reputasyon & Risk"; 
+            let repColor = data.reputation === "high" ? "text-success" : (data.reputation === "low" ? "text-danger" : "text-warning");
+            document.getElementById('val2').innerHTML = `Durum: <b class="${repColor}">${data.reputation.toUpperCase()}</b> | Şüpheli: <b>${data.suspicious ? "Evet ⚠️" : "Hayır ✅"}</b>`;
+            
+            document.getElementById('lbl3').innerText = "Alan Adı Özellikleri"; 
+            document.getElementById('val3').innerText = `Geçici (Temp Mail): ${data.domain_details.disposable ? "Evet ⚠️" : "Hayır"} | Ücretsiz Sağlayıcı: ${data.domain_details.free_provider ? "Evet" : "Hayır"}`;
+            
+            let profilesHtml = "";
+            if(data.profiles && data.profiles.length > 0) {
+                data.profiles.forEach(p => {
+                    profilesHtml += `<span class="badge bg-secondary me-1 mb-1">${p}</span>`;
+                });
             } else {
-                document.getElementById('lbl4').innerText = "Ek Bilgi / İzler"; 
-                document.getElementById('val4').innerText = "Bu e-posta ile ilişkili halka açık ek profil izine rastlanmadı.";
+                profilesHtml = "Halka açık ilişkilendirilmiş platform bulunamadı.";
             }
+            document.getElementById('lbl4').innerText = "İlişkili Platformlar / İzler"; 
+            document.getElementById('val4').innerHTML = profilesHtml;
         }
         else if(data.type === "username") {
             document.getElementById('lbl1').innerText = "Kullanıcı Adı"; 
