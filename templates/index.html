@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <title>CryptaOSINT | Advanced OSINT Intelligence</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+         --bg-color: #0b0f19;
+         --card-bg: rgba(18, 24, 38, 0.85);
+         --border-color: rgba(255, 255, 255, 0.1);
+         --accent-color: #6366f1;
+         --accent-glow: rgba(99, 102, 241, 0.3);
+         --text-main: #f8fafc;
+         --text-muted: #94a3b8;
+      }
+      
+      body {
+         background-color: var(--bg-color);
+         color: var(--text-main);
+         font-family: 'Nunito', sans-serif;
+         min-height: 100vh;
+         display: flex;
+         flex-direction: column;
+         justify-content: center;
+         padding: 20px;
+         position: relative;
+         overflow-x: hidden;
+      }
+
+      .grid-bg {
+         position: fixed;
+         top: -50%; left: -50%; width: 200%; height: 200%;
+         background-image: 
+            linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+         background-size: 50px 50px;
+         z-index: -1;
+         transform: perspective(500px) rotateX(60deg);
+         animation: waveGrid 15s ease-in-out infinite alternate;
+      }
+
+      body.animation-off .grid-bg {
+         animation: none;
+         transform: perspective(500px) rotateX(0deg);
+      }
+
+      @keyframes waveGrid {
+         0% { transform: perspective(500px) rotateX(60deg) translateY(0) rotate(0deg); }
+         50% { transform: perspective(500px) rotateX(55deg) translateY(40px) rotate(2deg); }
+         100% { transform: perspective(500px) rotateX(65deg) translateY(-40px) rotate(-2deg); }
+      }
+
+      .anim-toggle {
+         position: absolute;
+         top: 20px;
+         right: 20px;
+         background: var(--card-bg);
+         border: 1px solid var(--border-color);
+         color: var(--text-muted);
+         padding: 6px 12px;
+         border-radius: 8px;
+         font-size: 0.8rem;
+         cursor: pointer;
+         transition: all 0.3s;
+         z-index: 10;
+      }
+      .anim-toggle:hover {
+         color: #fff;
+         border-color: var(--accent-color);
+      }
+
+      .platform-wrapper { max-width: 1000px; margin: auto; width: 100%; z-index: 1; }
+      .brand-header { text-align: center; margin-bottom: 30px; }
+      .brand-title {
+         font-weight: 700; font-size: 2.5rem; letter-spacing: -1px;
+         background: linear-gradient(45deg, #818cf8, #c084fc);
+         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      }
+      .brand-subtitle { color: var(--text-muted); font-size: 0.95rem; }
+      
+      .main-card {
+         background-color: var(--card-bg); backdrop-filter: blur(12px);
+         border: 1px solid var(--border-color); border-radius: 16px; 
+         padding: 30px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      }
+      .search-group .form-control {
+         background-color: rgba(11, 15, 25, 0.8); border: 1px solid var(--border-color); color: #fff;
+         padding: 14px 20px; font-family: 'Nunito', sans-serif; font-size: 1rem; border-radius: 10px 0 0 10px;
+      }
+      .search-group .form-control:focus {
+         background-color: rgba(11, 15, 25, 0.9); border-color: var(--accent-color); color: #fff; 
+         box-shadow: 0 0 15px var(--accent-glow);
+      }
+      .search-group .btn {
+         background-color: var(--accent-color); border: none; padding: 0 30px; font-weight: 700; border-radius: 0 10px 10px 0;
+         transition: all 0.3s;
+      }
+      .search-group .btn:hover { background-color: #4f46e5; box-shadow: 0 0 15px var(--accent-glow); }
+      
+      .result-box {
+         background-color: rgba(11, 15, 25, 0.7); border: 1px solid var(--border-color); border-radius: 10px;
+         padding: 14px 18px; font-size: 0.95rem; color: #cbd5e1;
+         margin-top: 6px; min-height: 52px; display: flex; align-items: center; word-break: break-all;
+      }
+      .field-label { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+      .badge-custom {
+         background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.4);
+         padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;
+      }
+      .footer-note { text-align: center; margin-top: 25px; font-size: 0.8rem; color: var(--text-muted); }
+      #loader { display: none; text-align: center; padding: 20px; color: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<button class="anim-toggle" onclick="toggleAnimation()">
+    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Animasyon: <span id="animStatus">Açık</span>
+</button>
+
+<div class="platform-wrapper">
+    <div class="brand-header">
+        <h1 class="brand-title"><i class="fa-solid fa-shield-cat"></i> CryptaOSINT</h1>
+        <p class="brand-subtitle">Next-Generation Open Source Reconnaissance Suite</p>
+    </div>
+
+    <div class="main-card">
+        <div class="input-group search-group mb-4">
+            <input type="text" id="targetInput" class="form-control" placeholder="IP, Domain, Username veya Telefon (+90...) girin...">
+            <button class="btn btn-primary" onclick="performLookup()">
+                <i class="fa-solid fa-magnifying-glass me-2"></i>Sorgula
+            </button>
+        </div>
+
+        <div id="loader">
+            <div class="spinner-border spinner-border-sm text-indigo" role="status"></div>
+            <span class="ms-2">CryptaOSINT verileri topluyor...</span>
+        </div>
+
+        <div class="row g-3" id="resultArea" style="display:none;">
+            <div class="col-md-6">
+                <div class="field-label" id="lbl1">Hedef</div>
+                <div class="result-box" id="val1">-</div>
+            </div>
+            <div class="col-md-6">
+                <div class="field-label" id="lbl2">Detay / Konum</div>
+                <div class="result-box" id="val2">-</div>
+            </div>
+            <div class="col-md-6">
+                <div class="field-label" id="lbl3">Sağlayıcı / Operatör</div>
+                <div class="result-box" id="val3">-</div>
+            </div>
+            <div class="col-md-6">
+                <div class="field-label" id="lbl4">Ek Bilgi / İzler</div>
+                <div class="result-box" id="val4">-</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <i class="fa-solid fa-lock me-1"></i> CryptaOSINT Secure Recon Engine v3.1 &bull; Güvenli OSINT Paneli
+    </div>
+</div>
+
+<script>
+function toggleAnimation() {
+    let body = document.body;
+    let status = document.getElementById('animStatus');
+    body.classList.toggle('animation-off');
+    if(body.classList.contains('animation-off')) {
+        status.innerText = "Kapalı";
+    } else {
+        status.innerText = "Açık";
+    }
+}
+
+async function performLookup() {
+    let target = document.getElementById('targetInput').value.trim();
+    if(!target) return alert("Lütfen bir hedef belirtin!");
+    
+    let loader = document.getElementById('loader');
+    let resultArea = document.getElementById('resultArea');
+    
+    loader.style.display = 'block';
+    resultArea.style.display = 'none';
+    
+    try {
+        let response = await fetch('/api/lookup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ target: target })
+        });
+        
+        let data = await response.json();
+        loader.style.display = 'none';
+        
+        if(!data.success) { alert(data.message); return; }
+
+        resultArea.style.display = 'flex';
+
+        if(data.type === "ip") {
+            document.getElementById('lbl1').innerText = "IP Adresi"; 
+            document.getElementById('val1').innerHTML = `<span class="badge-custom">IPv4</span> ${data.ip}`;
+            document.getElementById('lbl2').innerText = "Konum"; 
+            document.getElementById('val2').innerText = `${data.city}, ${data.country}`;
+            document.getElementById('lbl3').innerText = "ISP Sağlayıcı"; 
+            document.getElementById('val3').innerText = data.isp;
+            document.getElementById('lbl4').innerText = "Reverse DNS"; 
+            document.getElementById('val4').innerText = data.domain;
+        } 
+        else if(data.type === "domain") {
+            document.getElementById('lbl1').innerText = "Alan Adı (Domain)"; 
+            document.getElementById('val1').innerHTML = `<span class="badge-custom">DNS</span> ${data.domain}`;
+            document.getElementById('lbl2').innerText = "Çözümlenen IP"; 
+            document.getElementById('val2').innerText = data.resolved_ip;
+            document.getElementById('lbl3').innerText = "Aktif Kayıtlar"; 
+            document.getElementById('val3').innerText = data.dns_raw.length + " kayıt bulundu";
+            document.getElementById('lbl4').innerText = "Durum"; 
+            document.getElementById('val4').innerText = "Aktif / Erişilebilir";
+        }
+        else if(data.type === "phone") {
+            document.getElementById('lbl1').innerText = "Telefon Numarası"; 
+            document.getElementById('val1').innerHTML = `<span class="badge-custom">PHONE</span> ${data.international}`;
+            document.getElementById('lbl2').innerText = "Ülke / Bölge"; 
+            document.getElementById('val2').innerText = data.country;
+            document.getElementById('lbl3').innerText = "Operatör (Carrier)"; 
+            document.getElementById('val3').innerText = data.carrier;
+            document.getElementById('lbl4').innerText = "OSINT İzleri / Bağlantılar"; 
+            document.getElementById('val4').innerHTML = `
+                <a href="${data.footprints[0]}" target="_blank" class="text-info me-2 text-decoration-none">[Google]</a>
+                <a href="${data.footprints[1]}" target="_blank" class="text-success me-2 text-decoration-none">[WhatsApp]</a>
+                <a href="${data.footprints[2]}" target="_blank" class="text-primary text-decoration-none">[Telegram]</a>
+            `;
+        }
+        else if(data.type === "username") {
+            document.getElementById('lbl1').innerText = "Kullanıcı Adı"; 
+            document.getElementById('val1').innerHTML = `<span class="badge-custom">USER</span> ${data.username}`;
+            document.getElementById('lbl2').innerText = "Bulunan Platformlar"; 
+            
+            let accountsHtml = "";
+            if(Object.keys(data.found_accounts).length === 0) {
+                accountsHtml = "Eşleşen hesap bulunamadı.";
+            } else {
+                for (const [platform, url] of Object.entries(data.found_accounts)) {
+                    accountsHtml += `<a href="${url}" target="_blank" class="badge bg-secondary text-decoration-none me-1 mb-1">${platform}</a> `;
+                }
+            }
+            document.getElementById('val2').innerHTML = accountsHtml;
+            document.getElementById('lbl3').innerText = "Tarama Durumu"; 
+            document.getElementById('val3').innerText = "Tamamlandı";
+            document.getElementById('lbl4').innerText = "Modül"; 
+            document.getElementById('val4').innerText = "CryptaOSINT Suite";
+        }
+    } catch (err) {
+        loader.style.display = 'none';
+        alert("Bağlantı hatası: " + err);
+    }
+}
+</script>
+
+</body>
+</html>
