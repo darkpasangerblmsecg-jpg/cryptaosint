@@ -27,35 +27,35 @@ def is_email(target):
 
 def lookup_email(email):
   clean_email = email.strip().lower()
-  email_hash = hashlib.md5(clean_email.encode("utf-8")).hexdigest()
-
-  gravatar_url = f"https://www.gravatar.com/{email_hash}.json"
-  profile_data = {}
-  has_gravatar = False
-
   try:
-    response = requests.get(gravatar_url, timeout=5)
+    headers = {"User-Agent": "CryptaOSINT-Recon-Suite"}
+    response = requests.get(
+        f"https://emailrep.io/{clean_email}", headers=headers, timeout=6
+    )
+
     if response.status_code == 200:
-      has_gravatar = True
       data = response.json()
-      entry = data.get("entry", [{}])[0]
-      profile_data = {
-          "display_name": entry.get("displayName", "Bilinmiyor"),
-          "profile_url": entry.get("profileUrl", ""),
-          "avatar_url": f"https://www.gravatar.com/avatar/{email_hash}?s=4096",
+      details = data.get("details", {})
+      return {
+          "success": True,
+          "type": "email",
+          "email": clean_email,
+          "reputation": data.get("reputation", "Bilinmiyor"),
+          "suspicious": data.get("suspicious", False),
+          "references": data.get("references", 0),
+          "domain_details": {
+              "registered": details.get("domain_exists", False),
+              "free_provider": details.get("free_provider", False),
+              "disposable": details.get("disposable", False),
+          },
+          "profiles": details.get("profiles", []),
       }
   except Exception:
     pass
 
-  domain = clean_email.split("@")[-1]
-
   return {
-      "success": True,
-      "type": "email",
-      "email": clean_email,
-      "domain": domain,
-      "gravatar": has_gravatar,
-      "profile": profile_data if has_gravatar else None,
+      "success": False,
+      "message": "E-posta analizi sırasında bir API hatası oluştu.",
   }
 
 
@@ -122,12 +122,11 @@ def lookup():
   if not target:
     return jsonify({"success": False, "message": "Hedef boş olamaz!"})
 
-  # 0. E-mail Lookup
+  # 0. E-mail Lookup (EmailRep.io)
   if is_email(target):
-    try:
-      return jsonify(lookup_email(target))
-    except:
-      pass
+    res = lookup_email(target)
+    if res.get("success"):
+      return jsonify(res)
 
   # 1. Discord ID Lookup
   if target.isdigit() and len(target) >= 17:
