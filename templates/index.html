@@ -5,21 +5,22 @@
     <title>CryptaOSINT | Advanced Intelligence Suite</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
       :root {
-         --bg-color: #0f121d;
-         --card-bg: #161b2c;
-         --border-color: rgba(99, 102, 241, 0.15);
-         --accent-color: #6366f1;
-         --accent-hover: #4f46e5;
-         --accent-glow: rgba(99, 102, 241, 0.2);
-         --text-main: #f1f5f9;
-         --text-muted: #94a3b8;
+         --bg-gradient: linear-gradient(135deg, #0f0c1b 0%, #1a103c 50%, #090614 100%);
+         --card-bg: rgba(26, 18, 51, 0.7);
+         --border-color: rgba(168, 85, 247, 0.3);
+         --accent-purple: #a855f7;
+         --accent-pink: #ec4899;
+         --accent-glow: rgba(168, 85, 247, 0.4);
+         --text-main: #f8fafc;
+         --text-muted: #cbd5e1;
       }
       
       body {
-         background-color: var(--bg-color);
+         background: var(--bg-gradient);
+         background-attachment: fixed;
          color: var(--text-main);
          font-family: 'Nunito', sans-serif;
          min-height: 100vh;
@@ -31,71 +32,63 @@
          overflow-x: hidden;
       }
 
-      /* Yumuşak ve modern arka plan deseni */
-      .grid-bg {
+      /* Arka Planda Renkli Parlayan Işık Efektleri */
+      .glow-orb {
          position: fixed;
-         top: 0; left: 0; width: 100%; height: 100%;
-         background-image: radial-gradient(rgba(99, 102, 241, 0.08) 1px, transparent 1px);
-         background-size: 30px 30px;
+         width: 400px;
+         height: 400px;
+         background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(236, 72, 153, 0.05) 60%, transparent 100%);
+         border-radius: 50px;
          z-index: -1;
+         animation: floatOrb 10s ease-in-out infinite alternate;
       }
+      .orb-1 { top: -10%; left: -10%; }
+      .orb-2 { bottom: -10%; right: -10%; animation-delay: -5s; }
 
-      .anim-toggle {
-         position: absolute;
-         top: 25px;
-         right: 25px;
-         background: var(--card-bg);
-         border: 1px solid var(--border-color);
-         color: var(--text-muted);
-         padding: 6px 14px;
-         border-radius: 20px;
-         font-size: 0.8rem;
-         cursor: pointer;
-         transition: all 0.2s ease;
-         z-index: 10;
-      }
-      .anim-toggle:hover {
-         color: #fff;
-         border-color: var(--accent-color);
+      @keyframes floatOrb {
+         0% { transform: translateY(0) scale(1); }
+         100% { transform: translateY(30px) scale(1.1); }
       }
 
       .platform-wrapper { max-width: 900px; margin: auto; width: 100%; z-index: 1; }
       
-      .brand-header { text-align: center; margin-bottom: 35px; }
+      .brand-header { text-align: center; margin-bottom: 30px; }
       .brand-title {
-         font-weight: 700; font-size: 2.2rem; letter-spacing: -0.5px;
-         color: #fff;
-         margin-bottom: 5px;
+         font-weight: 800; font-size: 2.8rem; letter-spacing: -0.5px;
+         background: linear-gradient(135deg, #c084fc 0%, #ec4899 100%);
+         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+         filter: drop-shadow(0 2px 10px rgba(192, 132, 252, 0.3));
       }
-      .brand-title i { color: var(--accent-color); }
-      .brand-subtitle { color: var(--text-muted); font-size: 0.9rem; }
+      .brand-title i { -webkit-text-fill-color: #c084fc; margin-right: 5px; }
+      .brand-subtitle { color: var(--text-muted); font-size: 0.95rem; font-weight: 600; }
       
       .main-card {
          background-color: var(--card-bg);
+         backdrop-filter: blur(16px);
          border: 1px solid var(--border-color);
-         border-radius: 20px; 
+         border-radius: 24px; 
          padding: 35px;
-         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
       }
 
       .search-group {
-         background: rgba(15, 18, 29, 0.6);
+         background: rgba(15, 12, 27, 0.8);
          border: 1px solid var(--border-color);
-         border-radius: 12px;
+         border-radius: 14px;
          padding: 6px;
-         transition: all 0.2s ease;
+         transition: all 0.3s ease;
       }
       .search-group:focus-within {
-         border-color: var(--accent-color);
-         box-shadow: 0 0 12px var(--accent-glow);
+         border-color: var(--accent-purple);
+         box-shadow: 0 0 20px var(--accent-glow);
       }
       .search-group .form-control {
          background: transparent;
          border: none;
          color: #fff;
-         padding: 10px 15px;
+         padding: 12px 18px;
          font-family: 'Nunito', sans-serif;
-         font-size: 0.95rem;
+         font-size: 1rem;
       }
       .search-group .form-control:focus {
          background: transparent;
@@ -103,59 +96,64 @@
          box-shadow: none;
       }
       .search-group .btn {
-         background-color: var(--accent-color);
+         background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
          border: none;
-         padding: 10px 25px;
+         padding: 12px 30px;
          font-weight: 700;
-         border-radius: 8px;
-         transition: background-color 0.2s;
+         border-radius: 10px;
+         color: white;
+         transition: opacity 0.2s, box-shadow 0.2s;
       }
-      .search-group .btn:hover { background-color: var(--accent-hover); }
+      .search-group .btn:hover { 
+         opacity: 0.9; 
+         box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+      }
       
       .result-box {
-         background-color: rgba(15, 18, 29, 0.5);
-         border: 1px solid var(--border-color);
-         border-radius: 10px;
-         padding: 12px 16px;
-         font-size: 0.9rem;
-         color: #cbd5e1;
-         margin-top: 5px;
-         min-height: 48px;
+         background-color: rgba(15, 12, 27, 0.6);
+         border: 1px solid rgba(168, 85, 247, 0.2);
+         border-radius: 12px;
+         padding: 14px 18px;
+         font-size: 0.95rem;
+         color: #f1f5f9;
+         margin-top: 6px;
+         min-height: 52px;
          display: flex;
          flex-direction: column;
          justify-content: center;
          word-break: break-all;
+         transition: border-color 0.2s;
+      }
+      .result-box:hover {
+         border-color: rgba(168, 85, 247, 0.5);
       }
       
       .field-label { 
-         font-size: 0.75rem; 
-         font-weight: 700; 
+         font-size: 0.8rem; 
+         font-weight: 800; 
          text-transform: uppercase; 
-         letter-spacing: 0.8px; 
-         color: var(--text-muted); 
+         letter-spacing: 1px; 
+         color: #c084fc; 
       }
       
       .badge-custom {
-         background: rgba(99, 102, 241, 0.15);
-         color: #818cf8;
-         border: 1px solid rgba(99, 102, 241, 0.3);
-         padding: 3px 8px;
-         border-radius: 6px;
-         font-size: 0.75rem;
+         background: rgba(168, 85, 247, 0.2);
+         color: #d8b4fe;
+         border: 1px solid rgba(168, 85, 247, 0.4);
+         padding: 4px 10px;
+         border-radius: 8px;
+         font-size: 0.8rem;
          font-weight: 700;
       }
 
-      .footer-note { text-align: center; margin-top: 30px; font-size: 0.8rem; color: var(--text-muted); }
-      #loader { display: none; text-align: center; padding: 25px; color: var(--accent-color); }
+      .footer-note { text-align: center; margin-top: 25px; font-size: 0.85rem; color: var(--text-muted); }
+      #loader { display: none; text-align: center; padding: 25px; color: #c084fc; font-weight: 700; }
     </style>
 </head>
 <body>
 
-<div class="grid-bg"></div>
-
-<button class="anim-toggle" onclick="toggleAnimation()">
-    <i class="fa-solid fa-circle-dot me-1 text-success"></i> Durum: <span id="animStatus">Aktif</span>
-</button>
+<div class="glow-orb orb-1"></div>
+<div class="glow-orb orb-2"></div>
 
 <div class="platform-wrapper">
     <div class="brand-header">
@@ -172,8 +170,8 @@
         </div>
 
         <div id="loader">
-            <div class="spinner-border spinner-border-sm text-indigo" role="status"></div>
-            <span class="ms-2">CryptaOSINT verileri topluyor...</span>
+            <div class="spinner-border spinner-border-sm text-purple me-2" role="status"></div>
+            <span>CryptaOSINT verileri tarıyor ve topluyor...</span>
         </div>
 
         <div class="row g-3" id="resultArea" style="display:none;">
@@ -197,20 +195,11 @@
     </div>
 
     <div class="footer-note">
-        <i class="fa-solid fa-lock me-1"></i> CryptaOSINT Secure Recon Engine v3.1 &bull; Güvenli OSINT Paneli
+        <i class="fa-solid fa-lock me-1 text-purple"></i> CryptaOSINT Secure Recon Engine v3.1 &bull; Güvenli OSINT Paneli
     </div>
 </div>
 
 <script>
-function toggleAnimation() {
-    let status = document.getElementById('animStatus');
-    if(status.innerText === "Aktif") {
-        status.innerText = "Pasif";
-    } else {
-        status.innerText = "Aktif";
-    }
-}
-
 async function performLookup() {
     let target = document.getElementById('targetInput').value.trim();
     if(!target) return alert("Lütfen bir hedef belirtin!");
