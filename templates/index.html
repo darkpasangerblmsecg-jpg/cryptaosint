@@ -2,18 +2,19 @@
 <html lang="tr">
 <head>
     <meta charset="utf-8">
-    <title>CryptaOSINT | Advanced OSINT Intelligence</title>
+    <title>CryptaOSINT | Advanced Intelligence Suite</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
       :root {
-         --bg-color: #0b0f19;
-         --card-bg: rgba(18, 24, 38, 0.85);
-         --border-color: rgba(255, 255, 255, 0.1);
+         --bg-color: #0f121d;
+         --card-bg: #161b2c;
+         --border-color: rgba(99, 102, 241, 0.15);
          --accent-color: #6366f1;
-         --accent-glow: rgba(99, 102, 241, 0.3);
-         --text-main: #f8fafc;
+         --accent-hover: #4f46e5;
+         --accent-glow: rgba(99, 102, 241, 0.2);
+         --text-main: #f1f5f9;
          --text-muted: #94a3b8;
       }
       
@@ -30,41 +31,27 @@
          overflow-x: hidden;
       }
 
+      /* Yumuşak ve modern arka plan deseni */
       .grid-bg {
          position: fixed;
-         top: -50%; left: -50%; width: 200%; height: 200%;
-         background-image: 
-            linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-         background-size: 50px 50px;
+         top: 0; left: 0; width: 100%; height: 100%;
+         background-image: radial-gradient(rgba(99, 102, 241, 0.08) 1px, transparent 1px);
+         background-size: 30px 30px;
          z-index: -1;
-         transform: perspective(500px) rotateX(60deg);
-         animation: waveGrid 15s ease-in-out infinite alternate;
-      }
-
-      body.animation-off .grid-bg {
-         animation: none;
-         transform: perspective(500px) rotateX(0deg);
-      }
-
-      @keyframes waveGrid {
-         0% { transform: perspective(500px) rotateX(60deg) translateY(0) rotate(0deg); }
-         50% { transform: perspective(500px) rotateX(55deg) translateY(40px) rotate(2deg); }
-         100% { transform: perspective(500px) rotateX(65deg) translateY(-40px) rotate(-2deg); }
       }
 
       .anim-toggle {
          position: absolute;
-         top: 20px;
-         right: 20px;
+         top: 25px;
+         right: 25px;
          background: var(--card-bg);
          border: 1px solid var(--border-color);
          color: var(--text-muted);
-         padding: 6px 12px;
-         border-radius: 8px;
+         padding: 6px 14px;
+         border-radius: 20px;
          font-size: 0.8rem;
          cursor: pointer;
-         transition: all 0.3s;
+         transition: all 0.2s ease;
          z-index: 10;
       }
       .anim-toggle:hover {
@@ -72,46 +59,94 @@
          border-color: var(--accent-color);
       }
 
-      .platform-wrapper { max-width: 1000px; margin: auto; width: 100%; z-index: 1; }
-      .brand-header { text-align: center; margin-bottom: 30px; }
+      .platform-wrapper { max-width: 900px; margin: auto; width: 100%; z-index: 1; }
+      
+      .brand-header { text-align: center; margin-bottom: 35px; }
       .brand-title {
-         font-weight: 700; font-size: 2.5rem; letter-spacing: -1px;
-         background: linear-gradient(45deg, #818cf8, #c084fc);
-         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+         font-weight: 700; font-size: 2.2rem; letter-spacing: -0.5px;
+         color: #fff;
+         margin-bottom: 5px;
       }
-      .brand-subtitle { color: var(--text-muted); font-size: 0.95rem; }
+      .brand-title i { color: var(--accent-color); }
+      .brand-subtitle { color: var(--text-muted); font-size: 0.9rem; }
       
       .main-card {
-         background-color: var(--card-bg); backdrop-filter: blur(12px);
-         border: 1px solid var(--border-color); border-radius: 16px; 
-         padding: 30px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+         background-color: var(--card-bg);
+         border: 1px solid var(--border-color);
+         border-radius: 20px; 
+         padding: 35px;
+         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      }
+
+      .search-group {
+         background: rgba(15, 18, 29, 0.6);
+         border: 1px solid var(--border-color);
+         border-radius: 12px;
+         padding: 6px;
+         transition: all 0.2s ease;
+      }
+      .search-group:focus-within {
+         border-color: var(--accent-color);
+         box-shadow: 0 0 12px var(--accent-glow);
       }
       .search-group .form-control {
-         background-color: rgba(11, 15, 25, 0.8); border: 1px solid var(--border-color); color: #fff;
-         padding: 14px 20px; font-family: 'Nunito', sans-serif; font-size: 1rem; border-radius: 10px 0 0 10px;
+         background: transparent;
+         border: none;
+         color: #fff;
+         padding: 10px 15px;
+         font-family: 'Nunito', sans-serif;
+         font-size: 0.95rem;
       }
       .search-group .form-control:focus {
-         background-color: rgba(11, 15, 25, 0.9); border-color: var(--accent-color); color: #fff; 
-         box-shadow: 0 0 15px var(--accent-glow);
+         background: transparent;
+         color: #fff;
+         box-shadow: none;
       }
       .search-group .btn {
-         background-color: var(--accent-color); border: none; padding: 0 30px; font-weight: 700; border-radius: 0 10px 10px 0;
-         transition: all 0.3s;
+         background-color: var(--accent-color);
+         border: none;
+         padding: 10px 25px;
+         font-weight: 700;
+         border-radius: 8px;
+         transition: background-color 0.2s;
       }
-      .search-group .btn:hover { background-color: #4f46e5; box-shadow: 0 0 15px var(--accent-glow); }
+      .search-group .btn:hover { background-color: var(--accent-hover); }
       
       .result-box {
-         background-color: rgba(11, 15, 25, 0.7); border: 1px solid var(--border-color); border-radius: 10px;
-         padding: 14px 18px; font-size: 0.95rem; color: #cbd5e1;
-         margin-top: 6px; min-height: 52px; display: flex; align-items: center; word-break: break-all;
+         background-color: rgba(15, 18, 29, 0.5);
+         border: 1px solid var(--border-color);
+         border-radius: 10px;
+         padding: 12px 16px;
+         font-size: 0.9rem;
+         color: #cbd5e1;
+         margin-top: 5px;
+         min-height: 48px;
+         display: flex;
+         flex-direction: column;
+         justify-content: center;
+         word-break: break-all;
       }
-      .field-label { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+      
+      .field-label { 
+         font-size: 0.75rem; 
+         font-weight: 700; 
+         text-transform: uppercase; 
+         letter-spacing: 0.8px; 
+         color: var(--text-muted); 
+      }
+      
       .badge-custom {
-         background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.4);
-         padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700;
+         background: rgba(99, 102, 241, 0.15);
+         color: #818cf8;
+         border: 1px solid rgba(99, 102, 241, 0.3);
+         padding: 3px 8px;
+         border-radius: 6px;
+         font-size: 0.75rem;
+         font-weight: 700;
       }
-      .footer-note { text-align: center; margin-top: 25px; font-size: 0.8rem; color: var(--text-muted); }
-      #loader { display: none; text-align: center; padding: 20px; color: var(--accent-color); }
+
+      .footer-note { text-align: center; margin-top: 30px; font-size: 0.8rem; color: var(--text-muted); }
+      #loader { display: none; text-align: center; padding: 25px; color: var(--accent-color); }
     </style>
 </head>
 <body>
@@ -119,7 +154,7 @@
 <div class="grid-bg"></div>
 
 <button class="anim-toggle" onclick="toggleAnimation()">
-    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Animasyon: <span id="animStatus">Açık</span>
+    <i class="fa-solid fa-circle-dot me-1 text-success"></i> Durum: <span id="animStatus">Aktif</span>
 </button>
 
 <div class="platform-wrapper">
@@ -168,13 +203,11 @@
 
 <script>
 function toggleAnimation() {
-    let body = document.body;
     let status = document.getElementById('animStatus');
-    body.classList.toggle('animation-off');
-    if(body.classList.contains('animation-off')) {
-        status.innerText = "Kapalı";
+    if(status.innerText === "Aktif") {
+        status.innerText = "Pasif";
     } else {
-        status.innerText = "Açık";
+        status.innerText = "Aktif";
     }
 }
 
@@ -213,7 +246,7 @@ async function performLookup() {
             document.getElementById('val3').innerHTML = `Lat: <b>${data.latitude}</b>, Lon: <b>${data.longitude}</b> | <a href="https://www.google.com/maps/search/?api=1&query=${data.latitude},${data.longitude}" target="_blank" class="text-info text-decoration-none">[Haritada Aç]</a>`;
             
             document.getElementById('lbl4').innerText = "ISP Sağlayıcı & Reverse DNS"; 
-            document.getElementById('val4').innerHTML = `ISP: <b>${data.isp}</b><br>DNS: <span class="text-muted">${data.domain}</span>`;
+            document.getElementById('val4').innerHTML = `<div>ISP: <b>${data.isp}</b></div><div>DNS: <span class="text-muted">${data.domain}</span></div>`;
         } 
         else if(data.type === "domain") {
             document.getElementById('lbl1').innerText = "Alan Adı (Domain)"; 
