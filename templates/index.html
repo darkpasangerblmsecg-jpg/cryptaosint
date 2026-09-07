@@ -130,7 +130,7 @@
 
     <div class="main-card">
         <div class="input-group search-group mb-4">
-            <input type="text" id="targetInput" class="form-control" placeholder="IP, Domain, Username veya Telefon (+90...) girin...">
+            <input type="text" id="targetInput" class="form-control" placeholder="IP, Domain, Username, Telefon (+90...) veya Discord ID girin...">
             <button class="btn btn-primary" onclick="performLookup()">
                 <i class="fa-solid fa-magnifying-glass me-2"></i>Sorgula
             </button>
@@ -235,6 +235,16 @@ async function performLookup() {
                 <a href="${data.footprints[1]}" target="_blank" class="text-success me-2 text-decoration-none">[WhatsApp]</a>
                 <a href="${data.footprints[2]}" target="_blank" class="text-primary text-decoration-none">[Telegram]</a>
             `;
+        }
+        else if(data.type === "discord") {
+            document.getElementById('lbl1').innerText = "Discord Kullanıcı"; 
+            document.getElementById('val1').innerHTML = `<span class="badge-custom">DISCORD</span> ${data.username}#${data.discriminator}`;
+            document.getElementById('lbl2').innerText = "Hesap Açılış Tarihi"; 
+            document.getElementById('val2').innerText = data.created_at;
+            document.getElementById('lbl3').innerText = "Bot Durumu"; 
+            document.getElementById('val3').innerText = data.bot ? "Evet (Bot)" : "Hayır (Normal Kullanıcı)";
+            document.getElementById('lbl4').innerText = "Profil Avatarı"; 
+            document.getElementById('val4').innerHTML = `<a href="${data.avatar}" target="_blank" class="text-info text-decoration-none">[Avatarı Tam Boyut Görüntüle]</a>`;
         }
         else if(data.type === "username") {
             document.getElementById('lbl1').innerText = "Kullanıcı Adı"; 
